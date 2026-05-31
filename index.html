@@ -2,54 +2,49 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Angaria delphinus — Babylon WebXR Viewer</title>
+<title>Restored Angaria VR Museum</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 html, body {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    overflow: hidden;
-    background: radial-gradient(circle at center, #07111c 0%, #02050b 70%, #000000 100%);
-    font-family: Arial, sans-serif;
+    width:100%;
+    height:100%;
+    margin:0;
+    overflow:hidden;
+    background:black;
+    font-family:Arial,sans-serif;
 }
 
 #renderCanvas {
-    width: 100%;
-    height: 100%;
-    touch-action: none;
-    display: block;
+    width:100%;
+    height:100%;
+    touch-action:none;
+    display:block;
 }
 
 #hud {
-    position: absolute;
-    top: 14px;
-    left: 14px;
-    color: #d8f7ff;
-    background: rgba(0,0,0,0.45);
-    padding: 12px 14px;
-    border-radius: 12px;
-    backdrop-filter: blur(8px);
-    z-index: 10;
-    max-width: 420px;
-    border: 1px solid rgba(120,220,255,0.25);
+    position:absolute;
+    left:14px;
+    top:14px;
+    z-index:10;
+    color:#dff9ff;
+    background:rgba(0,0,0,0.42);
+    border:1px solid rgba(120,220,255,0.25);
+    border-radius:14px;
+    padding:14px;
+    backdrop-filter:blur(10px);
+    max-width:420px;
 }
 
 #hud h2 {
-    margin: 0 0 8px 0;
-    color: #8de7ff;
-    font-weight: 600;
-}
-
-#hud p {
-    margin: 4px 0;
-    line-height: 1.35;
+    margin:0 0 8px 0;
+    color:#8be9ff;
 }
 
 .small {
-    opacity: 0.8;
-    font-size: 13px;
+    font-size:13px;
+    opacity:0.85;
+    line-height:1.35;
 }
 </style>
 
@@ -61,14 +56,10 @@ html, body {
 
 <div id="hud">
 <h2>Angaria delphinus</h2>
-<p>Illert / Cortie / Santilli inspired shell geometry</p>
-<p class="small">
+<div class="small">
+Illert / Cortie / Santilli inspired shell geometry<br>
 Quest 3 compatible • WebXR enabled • Pearlescent museum lighting
-</p>
-<p class="small">
-Place <b>angaria_delphinus_illert_cortie.glb</b>
-in the same folder as this index.html.
-</p>
+</div>
 </div>
 
 <canvas id="renderCanvas"></canvas>
@@ -76,37 +67,34 @@ in the same folder as this index.html.
 <script>
 
 const canvas = document.getElementById("renderCanvas");
+
 const engine = new BABYLON.Engine(canvas, true, {
-    preserveDrawingBuffer: true,
-    stencil: true
+    preserveDrawingBuffer:true,
+    stencil:true
 });
 
-const createScene = async function() {
+const createScene = async function(){
 
     const scene = new BABYLON.Scene(engine);
 
-    scene.clearColor = new BABYLON.Color4(0.005, 0.01, 0.02, 1.0);
+    scene.clearColor = new BABYLON.Color4(0.005,0.01,0.02,1.0);
 
-    // Camera
-    const camera = new BABYLON.ArcRotateCamera(
-        "camera",
-        Math.PI / 2,
-        Math.PI / 2.5,
-        18,
-        new BABYLON.Vector3(0, 0, 0),
+    // CAMERA
+    const camera = new BABYLON.UniversalCamera(
+        "cam",
+        new BABYLON.Vector3(0,1.5,-12),
         scene
     );
 
     camera.attachControl(canvas, true);
 
-    camera.lowerRadiusLimit = 5;
-    camera.upperRadiusLimit = 50;
-    camera.wheelDeltaPercentage = 0.01;
+    camera.speed = 0.35;
+    camera.angularSensibility = 5000;
 
-    // Lighting
+    // LIGHTS
     const hemi = new BABYLON.HemisphericLight(
         "hemi",
-        new BABYLON.Vector3(0, 1, 0),
+        new BABYLON.Vector3(0,1,0),
         scene
     );
 
@@ -114,41 +102,64 @@ const createScene = async function() {
 
     const rimBlue = new BABYLON.PointLight(
         "rimBlue",
-        new BABYLON.Vector3(-8, 5, -6),
+        new BABYLON.Vector3(-8,5,-6),
         scene
     );
 
-    rimBlue.diffuse = new BABYLON.Color3(0.2, 0.9, 1.0);
+    rimBlue.diffuse = new BABYLON.Color3(0.2,0.9,1.0);
     rimBlue.intensity = 120;
 
     const warm = new BABYLON.PointLight(
         "warm",
-        new BABYLON.Vector3(8, 3, 6),
+        new BABYLON.Vector3(8,3,6),
         scene
     );
 
-    warm.diffuse = new BABYLON.Color3(1.0, 0.55, 0.18);
+    warm.diffuse = new BABYLON.Color3(1.0,0.55,0.18);
     warm.intensity = 100;
 
-    // Glow layer
+    // GLOW
     const glow = new BABYLON.GlowLayer("glow", scene);
     glow.intensity = 0.55;
 
-    // Floating particles
-    const particleSystem = new BABYLON.ParticleSystem("particles", 3000, scene);
+    // PARTICLES
+    const particleSystem =
+        new BABYLON.ParticleSystem(
+            "particles",
+            3000,
+            scene
+        );
 
-    particleSystem.particleTexture = new BABYLON.Texture(
-        "https://playground.babylonjs.com/textures/flare.png",
-        scene
-    );
+    particleSystem.particleTexture =
+        new BABYLON.Texture(
+            "https://playground.babylonjs.com/textures/flare.png",
+            scene
+        );
 
-    particleSystem.emitter = new BABYLON.Vector3(0,0,0);
+    particleSystem.emitter =
+        new BABYLON.Vector3(0,0,0);
 
-    particleSystem.minEmitBox = new BABYLON.Vector3(-20,-20,-20);
-    particleSystem.maxEmitBox = new BABYLON.Vector3(20,20,20);
+    particleSystem.minEmitBox =
+        new BABYLON.Vector3(-20,-20,-20);
 
-    particleSystem.color1 = new BABYLON.Color4(0.2,0.9,1.0,0.8);
-    particleSystem.color2 = new BABYLON.Color4(0.9,0.4,1.0,0.7);
+    particleSystem.maxEmitBox =
+        new BABYLON.Vector3(20,20,20);
+
+    particleSystem.color1 =
+        new BABYLON.Color4(
+            0.2,
+            0.9,
+            1.0,
+            0.8
+        );
+
+    particleSystem.color2 =
+        new BABYLON.Color4(
+            0.9,
+            0.4,
+            1.0,
+            0.7
+        );
 
     particleSystem.minSize = 0.03;
     particleSystem.maxSize = 0.15;
@@ -158,12 +169,17 @@ const createScene = async function() {
 
     particleSystem.emitRate = 250;
 
-    particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ADD;
+    particleSystem.blendMode =
+        BABYLON.ParticleSystem.BLENDMODE_ADD;
 
-    particleSystem.gravity = new BABYLON.Vector3(0,0,0);
+    particleSystem.gravity =
+        new BABYLON.Vector3(0,0,0);
 
-    particleSystem.direction1 = new BABYLON.Vector3(-0.02,0.01,-0.02);
-    particleSystem.direction2 = new BABYLON.Vector3(0.02,0.03,0.02);
+    particleSystem.direction1 =
+        new BABYLON.Vector3(-0.02,0.01,-0.02);
+
+    particleSystem.direction2 =
+        new BABYLON.Vector3(0.02,0.03,0.02);
 
     particleSystem.minAngularSpeed = 0;
     particleSystem.maxAngularSpeed = Math.PI;
@@ -175,54 +191,166 @@ const createScene = async function() {
 
     particleSystem.start();
 
-    // Load GLB
-    BABYLON.SceneLoader.Append(
-        "./",
-        "angaria_delphinus_illert_cortie.glb",
-        scene,
-        function(scene) {
+    // LOAD MODEL
+    await new Promise((resolve, reject) => {
 
-            const meshes = scene.meshes;
+        BABYLON.SceneLoader.Append(
+            "./",
+            "angaria_delphinus_illert_cortie.glb",
+            scene,
+            function(){
 
-            for (let i = 0; i < meshes.length; i++) {
+                const meshes = scene.meshes;
 
-                const m = meshes[i];
+                let root = null;
 
-                if (m.material) {
+                for(let i=0;i<meshes.length;i++){
 
-                    // Push toward vibrant nacre
-                    if (m.material.metallic !== undefined) {
-                        m.material.metallic = 0.35;
+                    const m = meshes[i];
+
+                    // REMOVE CYAN FILAMENTS
+                    if(
+                        m.name.toLowerCase()
+                        .includes("growth_line")
+                    ){
+                        m.setEnabled(false);
+                        continue;
                     }
 
-                    if (m.material.roughness !== undefined) {
-                        m.material.roughness = 0.12;
+                    if(
+                        !root &&
+                        m.getTotalVertices &&
+                        m.getTotalVertices() > 0
+                    ){
+                        root = m;
                     }
 
-                    if (m.material.clearCoat !== undefined) {
-                        m.material.clearCoat.isEnabled = true;
-                        m.material.clearCoat.intensity = 1.0;
-                    }
+                    if(m.material){
 
-                    if (m.material.subSurface) {
-                        m.material.subSurface.isRefractionEnabled = true;
+                        if(
+                            m.material.metallic !== undefined
+                        ){
+                            m.material.metallic = 0.35;
+                        }
+
+                        if(
+                            m.material.roughness !== undefined
+                        ){
+                            m.material.roughness = 0.12;
+                        }
+
+                        if(
+                            m.material.clearCoat !== undefined
+                        ){
+                            m.material.clearCoat.isEnabled = true;
+                            m.material.clearCoat.intensity = 1.0;
+                        }
+
+                        if(m.material.subSurface){
+                            m.material.subSurface
+                                .isRefractionEnabled = true;
+                        }
                     }
                 }
+
+                // MUSEUM ROTATION
+                scene.registerBeforeRender(function(){
+
+                    if(root){
+                        root.rotation.y += 0.0018;
+                    }
+                });
+
+                resolve();
+            },
+            null,
+            function(_, msg){
+                reject(msg);
             }
+        );
+    });
 
-            // Auto-center
-            const root = scene.meshes[0];
+    // WEBXR
+    const xr =
+        await scene.createDefaultXRExperienceAsync({
+            floorMeshes:[]
+        });
 
-            // Slow museum rotation
-            scene.registerBeforeRender(function() {
-                root.rotation.y += 0.0018;
+    // CONTROLLER MOVEMENT
+    xr.input.onControllerAddedObservable.add((controller) => {
+
+        controller.onMotionControllerInitObservable.add((motionController) => {
+
+            const xrCamera = xr.baseExperience.camera;
+
+            scene.onBeforeRenderObservable.add(() => {
+
+                const dt =
+                    engine.getDeltaTime() / 1000.0;
+
+                // LEFT STICK = MOVE
+                const left =
+                    motionController.getComponent(
+                        "xr-standard-thumbstick"
+                    );
+
+                if(
+                    left &&
+                    controller.inputSource.handedness === "left"
+                ){
+
+                    const axes = left.axes;
+
+                    if(axes.length >= 2){
+
+                        const x = axes[0];
+                        const y = axes[1];
+
+                        const forward =
+                            xrCamera.getDirection(
+                                BABYLON.Axis.Z
+                            );
+
+                        const right =
+                            xrCamera.getDirection(
+                                BABYLON.Axis.X
+                            );
+
+                        xrCamera.position.addInPlace(
+                            forward.scale(
+                                y * -5.0 * dt
+                            )
+                        );
+
+                        xrCamera.position.addInPlace(
+                            right.scale(
+                                x * 5.0 * dt
+                            )
+                        );
+                    }
+                }
+
+                // RIGHT STICK = TURN
+                const rightStick =
+                    motionController.getComponent(
+                        "xr-standard-thumbstick"
+                    );
+
+                if(
+                    rightStick &&
+                    controller.inputSource.handedness === "right"
+                ){
+
+                    const axes = rightStick.axes;
+
+                    if(axes.length >= 2){
+
+                        xrCamera.rotation.y +=
+                            axes[0] * 1.5 * dt;
+                    }
+                }
             });
-        }
-    );
-
-    // WebXR
-    const xr = await scene.createDefaultXRExperienceAsync({
-        floorMeshes: []
+        });
     });
 
     return scene;
@@ -230,13 +358,13 @@ const createScene = async function() {
 
 createScene().then(scene => {
 
-    engine.runRenderLoop(function() {
+    engine.runRenderLoop(function(){
         scene.render();
     });
 
 });
 
-window.addEventListener("resize", function() {
+window.addEventListener("resize", function(){
     engine.resize();
 });
 
