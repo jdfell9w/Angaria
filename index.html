@@ -2,373 +2,92 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Restored Angaria VR Museum</title>
+<title>Angaria v19.1 Lip Beads Square Base</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-html, body {
-    width:100%;
-    height:100%;
-    margin:0;
-    overflow:hidden;
-    background:black;
-    font-family:Arial,sans-serif;
-}
-
-#renderCanvas {
-    width:100%;
-    height:100%;
-    touch-action:none;
-    display:block;
-}
-
-#hud {
-    position:absolute;
-    left:14px;
-    top:14px;
-    z-index:10;
-    color:#dff9ff;
-    background:rgba(0,0,0,0.42);
-    border:1px solid rgba(120,220,255,0.25);
-    border-radius:14px;
-    padding:14px;
-    backdrop-filter:blur(10px);
-    max-width:420px;
-}
-
-#hud h2 {
-    margin:0 0 8px 0;
-    color:#8be9ff;
-}
-
-.small {
-    font-size:13px;
-    opacity:0.85;
-    line-height:1.35;
-}
-</style>
-
 <script src="https://cdn.babylonjs.com/babylon.js"></script>
 <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+<style>
+html, body { margin:0; width:100%; height:100%; overflow:hidden; background:#000; font-family:Arial,sans-serif; }
+#renderCanvas { width:100%; height:100%; display:block; touch-action:none; }
+#overlay {
+  position:absolute; top:18px; left:18px; width:440px; padding:18px;
+  color:#d8f7ff; background:rgba(0,0,0,.56);
+  border:1px solid rgba(120,220,255,.25); border-radius:18px;
+  backdrop-filter:blur(6px); z-index:10;
+}
+#overlay h1 { margin:0 0 10px 0; color:#8feaff; }
+.info { margin-top:12px; color:#ffc27d; line-height:1.45; }
+</style>
 </head>
-
 <body>
-
-<div id="hud">
-<h2>Angaria delphinus</h2>
-<div class="small">
-Illert / Cortie / Santilli inspired shell geometry<br>
-Quest 3 compatible • WebXR enabled • Pearlescent museum lighting
-</div>
+<div id="overlay">
+  <h1>Angaria v19.1</h1>
+  <div>Restored lip beads • square exhibit base</div>
+  <div class="info">
+    • No-seam base GLB workflow<br>
+    • Restored opal beads around shell lip<br>
+    • 640 amethyst clusters<br>
+    • No lava/fissure curves<br>
+    • Square plinth under shell<br>
+    • Babylon/glTF-safe PBR materials
+  </div>
+  <div class="info">Place <b>angaria_v19_1_640_lip_beads_square_base.glb</b> in this folder.</div>
 </div>
 
 <canvas id="renderCanvas"></canvas>
 
 <script>
-
 const canvas = document.getElementById("renderCanvas");
-
-const engine = new BABYLON.Engine(canvas, true, {
-    preserveDrawingBuffer:true,
-    stencil:true
-});
-
-const createScene = async function(){
-
-    const scene = new BABYLON.Scene(engine);
-
-    scene.clearColor = new BABYLON.Color4(0.005,0.01,0.02,1.0);
-
-    // CAMERA
-    const camera = new BABYLON.UniversalCamera(
-        "cam",
-        new BABYLON.Vector3(0,1.5,-12),
-        scene
-    );
-
-    camera.attachControl(canvas, true);
-
-    camera.speed = 0.35;
-    camera.angularSensibility = 5000;
-
-    // LIGHTS
-    const hemi = new BABYLON.HemisphericLight(
-        "hemi",
-        new BABYLON.Vector3(0,1,0),
-        scene
-    );
-
-    hemi.intensity = 0.75;
-
-    const rimBlue = new BABYLON.PointLight(
-        "rimBlue",
-        new BABYLON.Vector3(-8,5,-6),
-        scene
-    );
-
-    rimBlue.diffuse = new BABYLON.Color3(0.2,0.9,1.0);
-    rimBlue.intensity = 120;
-
-    const warm = new BABYLON.PointLight(
-        "warm",
-        new BABYLON.Vector3(8,3,6),
-        scene
-    );
-
-    warm.diffuse = new BABYLON.Color3(1.0,0.55,0.18);
-    warm.intensity = 100;
-
-    // GLOW
-    const glow = new BABYLON.GlowLayer("glow", scene);
-    glow.intensity = 0.55;
-
-    // PARTICLES
-    const particleSystem =
-        new BABYLON.ParticleSystem(
-            "particles",
-            3000,
-            scene
-        );
-
-    particleSystem.particleTexture =
-        new BABYLON.Texture(
-            "https://playground.babylonjs.com/textures/flare.png",
-            scene
-        );
-
-    particleSystem.emitter =
-        new BABYLON.Vector3(0,0,0);
-
-    particleSystem.minEmitBox =
-        new BABYLON.Vector3(-20,-20,-20);
-
-    particleSystem.maxEmitBox =
-        new BABYLON.Vector3(20,20,20);
-
-    particleSystem.color1 =
-        new BABYLON.Color4(
-            0.2,
-            0.9,
-            1.0,
-            0.8
-        );
-
-    particleSystem.color2 =
-        new BABYLON.Color4(
-            0.9,
-            0.4,
-            1.0,
-            0.7
-        );
-
-    particleSystem.minSize = 0.03;
-    particleSystem.maxSize = 0.15;
-
-    particleSystem.minLifeTime = 4;
-    particleSystem.maxLifeTime = 12;
-
-    particleSystem.emitRate = 250;
-
-    particleSystem.blendMode =
-        BABYLON.ParticleSystem.BLENDMODE_ADD;
-
-    particleSystem.gravity =
-        new BABYLON.Vector3(0,0,0);
-
-    particleSystem.direction1 =
-        new BABYLON.Vector3(-0.02,0.01,-0.02);
-
-    particleSystem.direction2 =
-        new BABYLON.Vector3(0.02,0.03,0.02);
-
-    particleSystem.minAngularSpeed = 0;
-    particleSystem.maxAngularSpeed = Math.PI;
-
-    particleSystem.minEmitPower = 0.02;
-    particleSystem.maxEmitPower = 0.08;
-
-    particleSystem.updateSpeed = 0.015;
-
-    particleSystem.start();
-
-    // LOAD MODEL
-    await new Promise((resolve, reject) => {
-
-        BABYLON.SceneLoader.Append(
-            "./",
-            "angaria_delphinus_illert_cortie.glb",
-            scene,
-            function(){
-
-                const meshes = scene.meshes;
-
-                let root = null;
-
-                for(let i=0;i<meshes.length;i++){
-
-                    const m = meshes[i];
-
-                    // REMOVE CYAN FILAMENTS
-                    if(
-                        m.name.toLowerCase()
-                        .includes("growth_line")
-                    ){
-                        m.setEnabled(false);
-                        continue;
-                    }
-
-                    if(
-                        !root &&
-                        m.getTotalVertices &&
-                        m.getTotalVertices() > 0
-                    ){
-                        root = m;
-                    }
-
-                    if(m.material){
-
-                        if(
-                            m.material.metallic !== undefined
-                        ){
-                            m.material.metallic = 0.35;
-                        }
-
-                        if(
-                            m.material.roughness !== undefined
-                        ){
-                            m.material.roughness = 0.12;
-                        }
-
-                        if(
-                            m.material.clearCoat !== undefined
-                        ){
-                            m.material.clearCoat.isEnabled = true;
-                            m.material.clearCoat.intensity = 1.0;
-                        }
-
-                        if(m.material.subSurface){
-                            m.material.subSurface
-                                .isRefractionEnabled = true;
-                        }
-                    }
-                }
-
-                // MUSEUM ROTATION
-                scene.registerBeforeRender(function(){
-
-                    if(root){
-                        root.rotation.y += 0.0018;
-                    }
-                });
-
-                resolve();
-            },
-            null,
-            function(_, msg){
-                reject(msg);
-            }
-        );
-    });
-
-    // WEBXR
-    const xr =
-        await scene.createDefaultXRExperienceAsync({
-            floorMeshes:[]
-        });
-
-    // CONTROLLER MOVEMENT
-    xr.input.onControllerAddedObservable.add((controller) => {
-
-        controller.onMotionControllerInitObservable.add((motionController) => {
-
-            const xrCamera = xr.baseExperience.camera;
-
-            scene.onBeforeRenderObservable.add(() => {
-
-                const dt =
-                    engine.getDeltaTime() / 1000.0;
-
-                // LEFT STICK = MOVE
-                const left =
-                    motionController.getComponent(
-                        "xr-standard-thumbstick"
-                    );
-
-                if(
-                    left &&
-                    controller.inputSource.handedness === "left"
-                ){
-
-                    const axes = left.axes;
-
-                    if(axes.length >= 2){
-
-                        const x = axes[0];
-                        const y = axes[1];
-
-                        const forward =
-                            xrCamera.getDirection(
-                                BABYLON.Axis.Z
-                            );
-
-                        const right =
-                            xrCamera.getDirection(
-                                BABYLON.Axis.X
-                            );
-
-                        xrCamera.position.addInPlace(
-                            forward.scale(
-                                y * -5.0 * dt
-                            )
-                        );
-
-                        xrCamera.position.addInPlace(
-                            right.scale(
-                                x * 5.0 * dt
-                            )
-                        );
-                    }
-                }
-
-                // RIGHT STICK = TURN
-                const rightStick =
-                    motionController.getComponent(
-                        "xr-standard-thumbstick"
-                    );
-
-                if(
-                    rightStick &&
-                    controller.inputSource.handedness === "right"
-                ){
-
-                    const axes = rightStick.axes;
-
-                    if(axes.length >= 2){
-
-                        xrCamera.rotation.y +=
-                            axes[0] * 1.5 * dt;
-                    }
-                }
-            });
-        });
-    });
-
-    return scene;
+const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer:true, stencil:true, antialias:true });
+
+const createScene = async () => {
+  const scene = new BABYLON.Scene(engine);
+  scene.clearColor = new BABYLON.Color4(0.002,0.002,0.008,1);
+
+  scene.imageProcessingConfiguration.toneMappingEnabled = true;
+  scene.imageProcessingConfiguration.toneMappingType = BABYLON.ImageProcessingConfiguration.TONEMAPPING_KHR_PBR_NEUTRAL;
+  scene.imageProcessingConfiguration.exposure = 1.18;
+  scene.imageProcessingConfiguration.contrast = 1.07;
+
+  const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI/2, Math.PI/2.35, 8.8, new BABYLON.Vector3(0,0.6,0.25), scene);
+  camera.attachControl(canvas, true);
+  camera.wheelDeltaPercentage = 0.01;
+  camera.lowerRadiusLimit = 2.0;
+  camera.upperRadiusLimit = 30;
+
+  const hemi = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0,1,0), scene);
+  hemi.intensity = 0.90;
+
+  const cyan = new BABYLON.PointLight("cyan", new BABYLON.Vector3(5,7,5), scene);
+  cyan.diffuse = new BABYLON.Color3(0.35,0.80,1.0);
+  cyan.intensity = 36;
+
+  const warm = new BABYLON.PointLight("warm", new BABYLON.Vector3(-5,4,4), scene);
+  warm.diffuse = new BABYLON.Color3(0.90,0.45,0.20);
+  warm.intensity = 24;
+
+  const purple = new BABYLON.PointLight("purple", new BABYLON.Vector3(0,2,3), scene);
+  purple.diffuse = new BABYLON.Color3(0.52,0.10,0.95);
+  purple.intensity = 22;
+
+  try {
+    const result = await BABYLON.SceneLoader.ImportMeshAsync("", "./", "angaria_v19_1_640_lip_beads_square_base.glb?v=191beadsbase1", scene);
+    const root = new BABYLON.TransformNode("angariaRoot", scene);
+    result.meshes.forEach(m => { if (m.name !== "__root__") m.parent = root; });
+    root.position.y = 0.65;
+    root.scaling = new BABYLON.Vector3(1.40,1.40,1.40);
+    scene.registerBeforeRender(() => { root.rotation.y += 0.0008; });
+  } catch(e) {
+    console.error(e);
+    alert("Failed to load GLB. Check exact filename and GitHub path.");
+  }
+
+  try { await scene.createDefaultXRExperienceAsync({}); } catch(e) { console.log("XR unavailable:", e); }
+  return scene;
 };
 
-createScene().then(scene => {
-
-    engine.runRenderLoop(function(){
-        scene.render();
-    });
-
-});
-
-window.addEventListener("resize", function(){
-    engine.resize();
-});
-
+createScene().then(scene => engine.runRenderLoop(() => scene.render()));
+window.addEventListener("resize", () => engine.resize());
 </script>
-
 </body>
 </html>
